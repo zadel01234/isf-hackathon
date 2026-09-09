@@ -42,6 +42,10 @@ export function validateStep(step, data) {
     }
   }
 
+  if (step === 4) {
+    if (!data.acceptedTerms) errors.acceptedTerms = "You must accept the terms and conditions to submit.";
+  }
+
   return errors;
 }
 
@@ -61,4 +65,5 @@ export const INITIAL_DATA = {
   valueProposition: "",
   hasTeam: "",
   teamSize: "",
+  acceptedTerms: false,
 };

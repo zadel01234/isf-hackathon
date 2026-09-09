@@ -1,20 +1,22 @@
-import { useState } from "react";
 import Stepper, { STEPS } from "./components/Stepper";
 import PersonalInfoStep from "./steps/PersonalInfoStep";
 import AcademicStep from "./steps/AcademicStep";
 import ProjectStep from "./steps/ProjectStep";
 import TeamStep from "./steps/TeamStep";
+import ReviewStep from "./steps/ReviewStep";
 import SuccessScreen from "./components/SuccessScreen";
 import { validateStep, INITIAL_DATA } from "./validation";
+import { usePersistedForm } from "./usePersistedForm";
+import { useState } from "react";
 
-const STEP_COMPONENTS = [PersonalInfoStep, AcademicStep, ProjectStep, TeamStep];
+const STEP_COMPONENTS = [PersonalInfoStep, AcademicStep, ProjectStep, TeamStep, ReviewStep];
 
 export default function App() {
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState(INITIAL_DATA);
+  const { data, setData, step, setStep, lastSavedAt, clearPersisted, isRestored } = usePersistedForm(INITIAL_DATA);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [dismissedRestoreNotice, setDismissedRestoreNotice] = useState(false);
 
   const update = (patch) => setData((d) => ({ ...d, ...patch }));
 
@@ -25,12 +27,17 @@ export default function App() {
       return;
     }
     setErrors({});
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    setStep(Math.min(step + 1, STEPS.length - 1));
   };
 
   const goBack = () => {
     setErrors({});
-    setStep((s) => Math.max(s - 1, 0));
+    setStep(Math.max(step - 1, 0));
+  };
+
+  const goToStep = (target) => {
+    setErrors({});
+    setStep(target);
   };
 
   const handleSubmit = async (e) => {
@@ -42,10 +49,10 @@ export default function App() {
     }
     setSubmitting(true);
     // Simulated network submission — wire this up to a real endpoint.
-    console.log("Submitting application:", data);
     await new Promise((resolve) => setTimeout(resolve, 1200));
     setSubmitting(false);
     setSubmitted(true);
+    clearPersisted();
   };
 
   const reset = () => {
@@ -53,10 +60,12 @@ export default function App() {
     setErrors({});
     setStep(0);
     setSubmitted(false);
+    clearPersisted();
   };
 
   const CurrentStep = STEP_COMPONENTS[step];
   const isLastStep = step === STEPS.length - 1;
+  const showRestoreNotice = isRestored && !dismissedRestoreNotice && !submitted;
 
   return (
     <div className="min-h-screen bg-ink text-paper">
@@ -73,6 +82,30 @@ export default function App() {
           <p className="text-xs text-muted">isf.atcafrica.com · A regional hackathon</p>
         </header>
 
+        {showRestoreNotice && (
+          <div className="mb-6 flex items-start gap-3 rounded-md border border-gold/40 bg-gold/10 px-4 py-3">
+            <svg className="mt-0.5 shrink-0 text-gold" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 8v5m0 3.5h.01M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="text-sm text-paper-dim flex-1">
+              We picked up where you left off — your answers were saved on this device.
+            </p>
+            <button
+              type="button"
+              onClick={() => setDismissedRestoreNotice(true)}
+              className="text-sm text-gold hover:text-gold-soft transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-[220px_1fr] gap-10">
           <div>
             <Stepper current={submitted ? STEPS.length : step} />
@@ -83,7 +116,7 @@ export default function App() {
               <SuccessScreen fullName={data.fullName} projectName={data.projectName} onReset={reset} />
             ) : (
               <form onSubmit={handleSubmit} noValidate>
-                <CurrentStep data={data} update={update} errors={errors} />
+                <CurrentStep data={data} update={update} errors={errors} onEditStep={goToStep} />
 
                 <div className="mt-9 flex items-center justify-between border-t border-ink-line pt-6">
                   <button
@@ -95,29 +128,32 @@ export default function App() {
                     Back
                   </button>
 
-                  {isLastStep ? (
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="inline-flex items-center gap-2 rounded-md bg-gold text-ink font-medium text-sm px-5 py-2.5 hover:bg-gold-soft transition-colors disabled:opacity-70 disabled:cursor-wait"
-                    >
-                      {submitting && (
-                        <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-                          <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                        </svg>
-                      )}
-                      {submitting ? "Submitting…" : "Submit application"}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={goNext}
-                      className="rounded-md bg-gold text-ink font-medium text-sm px-5 py-2.5 hover:bg-gold-soft transition-colors"
-                    >
-                      Continue
-                    </button>
-                  )}
+                  <div className="flex items-center gap-4">
+                    <SaveIndicator lastSavedAt={lastSavedAt} />
+                    {isLastStep ? (
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="inline-flex items-center gap-2 rounded-md bg-gold text-ink font-medium text-sm px-5 py-2.5 hover:bg-gold-soft transition-colors disabled:opacity-70 disabled:cursor-wait"
+                      >
+                        {submitting && (
+                          <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                            <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                          </svg>
+                        )}
+                        {submitting ? "Submitting…" : "Submit application"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={goNext}
+                        className="rounded-md bg-gold text-ink font-medium text-sm px-5 py-2.5 hover:bg-gold-soft transition-colors"
+                      >
+                        Continue
+                      </button>
+                    )}
+                  </div>
                 </div>
               </form>
             )}
@@ -125,5 +161,17 @@ export default function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SaveIndicator({ lastSavedAt }) {
+  if (!lastSavedAt) return null;
+  return (
+    <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <path d="M4 12.5l5 5L20 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      Draft saved
+    </span>
   );
 }

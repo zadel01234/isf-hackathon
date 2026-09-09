@@ -3,6 +3,7 @@ const STEPS = [
   { label: "Academic & Experience" },
   { label: "Project Details" },
   { label: "Team Structure" },
+  { label: "Review & Terms" },
 ];
 
 export default function Stepper({ current }) {
