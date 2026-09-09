@@ -1,4 +1,4 @@
-export const GENDERS = ["Female", "Male", "Non-binary", "Prefer not to say"];
+export const GENDERS = ["Female", "Male", "Prefer not to say"];
 
 export const COUNTRIES = [
   "Nigeria",

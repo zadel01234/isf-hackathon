@@ -42,6 +42,7 @@ export default function App() {
     }
     setSubmitting(true);
     // Simulated network submission — wire this up to a real endpoint.
+    console.log("Submitting application:", data);
     await new Promise((resolve) => setTimeout(resolve, 1200));
     setSubmitting(false);
     setSubmitted(true);
