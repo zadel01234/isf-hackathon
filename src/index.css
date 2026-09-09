@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #10131a;
+  --color-ink-soft: #171b24;
+  --color-ink-line: #2a3040;
+  --color-paper: #f5f1e8;
+  --color-paper-dim: #cfd0c9;
+  --color-gold: #d9a441;
+  --color-gold-soft: #e8c789;
+  --color-signal: #4f9d6e;
+  --color-rust: #c4593a;
+  --color-muted: #8c93a6;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-body);
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Custom checkbox / radio styling shared across the form */
+  .field-input {
+    background-color: var(--color-ink);
+    border: 1px solid var(--color-ink-line);
+    color: var(--color-paper);
+  }
+  .field-input:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  .field-input::placeholder {
+    color: var(--color-muted);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
