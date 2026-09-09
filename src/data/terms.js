@@ -1,26 +1,24 @@
 export const TERMS_SECTIONS = [
   {
-    title: "Eligibility",
-    body: "Open to individuals and teams building an original project for the categories listed in this application. Applicants may enter solo or as part of a team of up to ten people. One application per project.",
+    title: "Event Commitment",
+    body: " All applicants—including shortlisted teams and finalists—must be fully available to participate physically/virtually on the designated hackathon event dates.",
   },
   {
-    title: "Originality & ownership",
-    body: "Your submission must be your own work, or your team's own work, and must not infringe on another party's intellectual property. You keep ownership of what you build. By applying, you grant the organisers permission to showcase your project name, overview, and team name for event promotion.",
+    title: "Team Dedicated Focus",
+    body: "Selected teams and individual participants commit to active, dedicated participation throughout the entire duration of the hackathon build phase.",
   },
   {
-    title: "Final stage commitment",
-    body: "Shortlisted applicants are expected to attend the final stage in November 2026 in person. Applications submitted without confirmed availability for this date will not be considered for the final stage.",
+    title: "Data Privacy & Security",
+    body: "Your personal information is securely stored and protected in accordance with strict data privacy standards.",
   },
   {
-    title: "Code of conduct",
-    body: "Applicants and, where relevant, their teams are expected to engage respectfully with organisers, judges, mentors, and fellow participants throughout the process. Harassment or discriminatory conduct of any kind may result in disqualification.",
+    title: "Partner Opportunity Network",
+    body: " By applying, you grant us permission to securely share your contact details with official event partners for future career, venture, and learning opportunities.",
   },
   {
-    title: "Selection & communication",
-    body: "Applications are reviewed on a rolling basis. Decisions on shortlisting, mentorship, and final-stage invitations rest with the ISF'26 / ATC Africa organising team. Updates will be sent to the email associated with your application.",
-  },
-  {
-    title: "Data use",
-    body: "Information submitted here is used to evaluate your application and to communicate with you about BuildAthon 2026. It will not be sold to third parties.",
+    title: "Compliance & Code of Conduct",
+    body: "ISF × ATC Africa reserves the right to disqualify or withdraw any participant or team that violates event guidelines, ethical standards, or community policies.",
   },
 ];
+
+
